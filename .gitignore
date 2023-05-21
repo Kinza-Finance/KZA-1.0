@@ -1,0 +1,14 @@
+test/invariant/
+broadcast/
+cache/
+out/
+# Logs
+logs
+*.log
+
+
+.DS_Store
+.env
+# some mock stuff
+script/Mock*
+src/contracts/MockEAC
