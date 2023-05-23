@@ -1,4 +1,6 @@
 # !/bin/bash
+# if verification fails run:
+# forge verify-contract <address> ContractName --verifier-url $VERIFIER_URL --etherscan-api-key $ETHERSCAN_API_KEY
 chainId=80001
 forge script script/0-KZA.s.sol --rpc-url $MUMBAI_RPC_URL --broadcast --verify -vvvv
 #source address of KZA into env variable
@@ -6,7 +8,6 @@ KZA=($(jq -r '.transactions[0].contractAddress' broadcast/0-KZA.s.sol/${chainId}
 echo "\n#deployment variables\nKZA=$KZA" >> ".env"
 # deploy XKZA
 forge script script/1-XKZA.s.sol --rpc-url $MUMBAI_RPC_URL --broadcast --verify -vvvv
-# echo
 XKZA=($(jq -r '.transactions[0].contractAddress' broadcast/1-XKZA.s.sol/${chainId}/run-latest.json))
 echo "XKZA=$XKZA" >> ".env"
 # deploy vestingEscorow
@@ -29,9 +30,9 @@ echo "BribeAssetRegistry=$BribeAssetRegistry" >> ".env"
 forge script script/6-Voter.s.sol --rpc-url $MUMBAI_RPC_URL --broadcast --verify -vvvv
 Voter=($(jq -r '.transactions[0].contractAddress' broadcast/6-Voter.s.sol/${chainId}/run-latest.json))
 echo "Voter=$Voter" >> ".env"
-# deploy EmissiontDistributor
-forge script script/7-EmissiontDistributor.s.sol --rpc-url $MUMBAI_RPC_URL --broadcast --verify -vvvv
-KZADistributor=($(jq -r '.transactions[0].contractAddress' broadcast/7-EmissiontDistributor.s.sol/${chainId}/run-latest.json))
+# deploy KZADistributor
+forge script script/7-KZADistributor.s.sol --rpc-url $MUMBAI_RPC_URL --broadcast --verify -vvvv
+KZADistributor=($(jq -r '.transactions[0].contractAddress' broadcast/7-KZADistributor.s.sol/${chainId}/run-latest.json))
 echo "KZADistributor=$KZADistributor" >> ".env"
 # deploy ReserveFeeDistributor
 forge script script/8-ReserveFeeDistributor.s.sol --rpc-url $MUMBAI_RPC_URL --broadcast --verify -vvvv

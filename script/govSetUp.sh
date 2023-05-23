@@ -1,4 +1,5 @@
 # !/bin/bash
+# this is sequential in the initial deployment, after all contract creation
 forge script script/gov-action/Minter-updateVoter.s.sol --rpc-url $MUMBAI_RPC_URL --broadcast -vvvv
 forge script script/gov-action/Minter-updateDistributor.s.sol --rpc-url $MUMBAI_RPC_URL --broadcast -vvvv
 forge script script/gov-action/XKZA-updateVoter.s.sol --rpc-url $MUMBAI_RPC_URL --broadcast -vvvv
