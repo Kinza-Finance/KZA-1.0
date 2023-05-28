@@ -7,7 +7,7 @@ import "../src/contracts/KZA/Minter.sol";
 contract DeployMinter is Script {
     function run() external {
         uint256 deployerPrivateKey = vm.envUint("PRIVATE_KEY");
-        address GOV = vm.envAddress("GOV");
+        address GOV = vm.envAddress("deployer");
         address kza = vm.envAddress("KZA");
         address pool = vm.envAddress("Pool");
         vm.startBroadcast(deployerPrivateKey);

@@ -7,7 +7,7 @@ import "../src/contracts/integration/LockTransferStrategy.sol";
 contract DeployRewardsVault is Script {
     function run() external {
         uint256 deployerPrivateKey = vm.envUint("PRIVATE_KEY");
-        address GOV = vm.envAddress("GOV");
+        address GOV = vm.envAddress("deployer");
         address rc = vm.envAddress("RewardsController");
         address rv = vm.envAddress("RewardsVault");
         address xkza = vm.envAddress("XKZA");

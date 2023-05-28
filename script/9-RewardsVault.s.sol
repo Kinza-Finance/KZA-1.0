@@ -6,7 +6,7 @@ import "../src/contracts/integration/RewardsVault.sol";
 contract DeployRewardsVault is Script {
     function run() external {
         uint256 deployerPrivateKey = vm.envUint("PRIVATE_KEY");
-        address GOV = vm.envAddress("GOV");
+        address GOV = vm.envAddress("deployer");
         address dist = vm.envAddress("KZADistributor");
         address kza = vm.envAddress("KZA");
         vm.startBroadcast(deployerPrivateKey);

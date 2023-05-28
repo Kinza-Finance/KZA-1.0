@@ -7,7 +7,7 @@ import "../src/contracts/KZA/KZA.sol";
 contract DeployKZA is Script {
     function run() external {
         uint256 deployerPrivateKey = vm.envUint("PRIVATE_KEY");
-        address GOV = vm.envAddress("GOV");
+        address GOV = vm.envAddress("deployer");
         vm.startBroadcast(deployerPrivateKey);
 
         new KZA(GOV);

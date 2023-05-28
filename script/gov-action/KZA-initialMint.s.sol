@@ -8,7 +8,7 @@ contract KZAInitialMint is Script {
     function run() external {
         uint256 govPrivateKey = vm.envUint("PRIVATE_KEY_GOV");
         address kza = vm.envAddress("KZA");
-        address initialMintTarget = vm.envAddress("VestingEscrow");
+        address initialMintTarget = vm.envAddress("Treasury");
         vm.startBroadcast(govPrivateKey);
 
         KZA(kza).initialMint(initialMintTarget);
