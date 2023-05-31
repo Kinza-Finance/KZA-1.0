@@ -19,9 +19,7 @@ contract VoterPushUnderlying is Script {
         vm.startBroadcast(govPrivateKey);
         for (uint i; i < length;++i) {
             address underlying = vm.envAddress(underlyings[i]);
-            if (i == 4 || i == 5) {
-                Voter(voter).pushUnderlying(underlying);
-            }
+            Voter(voter).pushUnderlying(underlying);
         }
         vm.stopBroadcast();
         
