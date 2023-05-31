@@ -1,5 +1,6 @@
 # !/bin/bash
 # this is sequential in the initial deployment, after all contract creation
+export RPC_URL=$BSCTEST_RPC_URL
 forge script script/gov-action/Minter-updateVoter.s.sol --rpc-url $RPC_URL --broadcast -vvvv
 forge script script/gov-action/Minter-updateDistributor.s.sol --rpc-url $RPC_URL --broadcast -vvvv
 forge script script/gov-action/XKZA-updateVoter.s.sol --rpc-url $RPC_URL --broadcast -vvvv
@@ -10,3 +11,4 @@ forge script script/gov-action/EManager-setEmissionAdmin.s.sol --rpc-url $RPC_UR
 
 forge script script/gov-action/KZA-initialMint.s.sol --rpc-url $RPC_URL --broadcast -vvvv
 forge script script/gov-action/Voter-pushUnderlying.s.sol --rpc-url $RPC_URL --broadcast -vvvv
+forge script script/gov-action/BribeAssetRegistry-pushBribeToken.s.sol --rpc-url $RPC_URL --broadcast -vvvv
