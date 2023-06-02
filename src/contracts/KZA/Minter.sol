@@ -40,7 +40,7 @@ contract Minter is Ownable {
     // the only dependency to distribute reward tokens is referencing voter
     IVoter public voter;
 
-    uint public decay = 100; // 0.5% weekly decay
+    uint public decay = 100; // 1% weekly decay
     uint public emission = 684_642 * 1e18;
     uint public epoch;
 
