@@ -298,7 +298,7 @@ contract AggregateBribe {
     /// @param amount amount of vote to be accounted
     /// @param account voter address
     function _withdraw(uint amount, address account) external {
-        require(msg.sender == voter);
+        require(msg.sender == voter, "not voter");
 
         totalSupply -= amount;
         balanceOf[account] -= amount;
