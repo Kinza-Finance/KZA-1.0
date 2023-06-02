@@ -23,6 +23,7 @@ contract Voter is Ownable {
     //////////////////////////////////////////////////////////////*/
     uint internal constant DURATION = 7 days; // rewards are released over 7 days
     address public immutable xToken; // the xtoken that can vote on this contract
+    address public immutable bribeAssetRegistry;
 
     /*//////////////////////////////////////////////////////////////
                     STORAGE VARIABLES & TYPES
@@ -32,8 +33,6 @@ contract Voter is Ownable {
     uint internal _unlocked = 1;
 
     IVoteLogic public voteLogic; // the voteLogic that can aggregate balance of XToken for this voter
-
-    address public bribeAssetRegistry;
 
     uint public totalWeight; // total voting weight
 
