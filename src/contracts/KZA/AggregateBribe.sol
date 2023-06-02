@@ -115,7 +115,7 @@ contract AggregateBribe {
     function getEpochStart(uint timestamp) public pure returns (uint) {
         uint bribeStart = _bribeStart(timestamp);
         uint bribeEnd = bribeStart + DURATION;
-        return timestamp < bribeEnd ? bribeStart : bribeStart + 7 days;
+        return timestamp < bribeEnd ? bribeStart : bribeStart + DURATION;
     }
 
     /// @notice Determine the prior balance for an account as of a block number
@@ -385,6 +385,6 @@ contract AggregateBribe {
     /// @param timestamp timestamp in second
     /// @return the start time of the epoch corresponds to that timestamp
     function _bribeStart(uint timestamp) internal pure returns (uint) {
-        return timestamp - (timestamp % (7 days));
+        return timestamp - (timestamp % (DURATION));
     }
 }
