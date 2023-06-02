@@ -38,6 +38,8 @@ contract Voter is Ownable {
 
     address[] public markets; // all underlying viable for incentives
 
+    uint256 public epoch;
+    address public minter;
     mapping(address => address) public bribes; // underlying => external bribe (external bribes)
 
     mapping(address => uint256) public weights; // underlying => weight
@@ -70,6 +72,10 @@ contract Voter is Ownable {
 
     event NewVoteLogic(
         address newVoteLogic
+    );
+
+    event NewMinter(
+        address newMinter
     );
     
 
@@ -105,13 +111,25 @@ contract Voter is Ownable {
         _;
     }
 
+    modifier onlyEpochSynced() {
+        require(block.timestamp / DURATION == epoch, "epoch out of sync; please update epoch on Minter");
+        _;
+    }
+
+    modifier onlyMinter() {
+        require(msg.sender == minter, "caller not minter");
+        _;
+    }
+
     /*//////////////////////////////////////////////////////////////
                             CONSTRUCTOR
     //////////////////////////////////////////////////////////////*/
-    constructor(address _xToken, address _voteLogic, address  _bribeAssetRegistry, address _governance) {
+    constructor(address _xToken, address _minter, address _voteLogic, address  _bribeAssetRegistry, address _governance) {
         xToken = _xToken;
+        minter = _minter;
         voteLogic = IVoteLogic(_voteLogic);
         bribeAssetRegistry = _bribeAssetRegistry;
+        epoch = block.timestamp / DURATION;
         transferOwnership(_governance);
         emit NewVoteLogic(_voteLogic);
     }
@@ -171,9 +189,15 @@ contract Voter is Ownable {
         emit NewVoteLogic(_newVoteLogic);
     }
 
+    function updateMinter(address _newMinter) external onlyOwner {
+        require(minter != address(0), "minter can not be null");
+        minter = _newMinter;
+        emit NewMinter(_newMinter);
+    }
+
     // repeat the last vote (same ratio) but update user with his latest balance
     // this is only callable from XToken
-    function reVote(address _xTokenHolder) onlyXToken external {
+    function reVote(address _xTokenHolder) onlyXToken onlyEpochSynced external {
         // if the user has never voted, no refreshing is needed
         if(lastVoted[_xTokenHolder] == 0) {
             return;
@@ -193,12 +217,14 @@ contract Voter is Ownable {
     /*//////////////////////////////////////////////////////////////
                          USER INTERACTION
     //////////////////////////////////////////////////////////////*/
-
+    function sync(uint256 _epoch) onlyMinter external {
+        epoch = _epoch;
+    }
     /// @notice user can update their vote, only the last vote before an epoch is counted
     /// @param _account the owner of the bribe, essentially this contract
     /// @param _poolVote the list of pool addresses
     /// @param _weights the list of relative weights for each pool
-    function vote(address _account, address[] calldata _poolVote, uint256[] calldata _weights) external {
+    function vote(address _account, address[] calldata _poolVote, uint256[] calldata _weights) external onlyEpochSynced {
         require(isDelegatedOrOwner(msg.sender, _account), "not owner or delegated");
         require(_poolVote.length == _weights.length, "number of pools and weights do not match");
         lastVoted[_account] = block.timestamp;

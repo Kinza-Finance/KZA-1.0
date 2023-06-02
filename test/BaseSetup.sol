@@ -142,7 +142,7 @@ contract BaseSetup is Test {
         registry = new BribeAssetRegistry(GOV);
         // deployment of Voter
         vm.prank(DEPLOYER);
-        voter = new Voter(address(xkza), address(votelogic), address(registry), GOV);
+        voter = new Voter(address(xkza), address(minter), address(votelogic), address(registry), GOV);
 
         
         bribeTokenA = new MockERC20();
@@ -185,6 +185,8 @@ contract BaseSetup is Test {
 
         vm.prank(GOV);
         kza.initialMint(INIT_TOKENHOLDER);
+        vm.prank(GOV);
+        kza.setBribeMinter(address(minter));
         // // create underlying which can be voted
         vm.prank(GOV);
         voter.pushUnderlying(USDC);
@@ -195,9 +197,7 @@ contract BaseSetup is Test {
         eb_usdt = AggregateBribe(address(voter.bribes(USDT)));
         // set current timestamp - foundry has a default of 1
         skip(1683000000);
-
-
-
+        minter.update_period();
     }
 
     function facuet(address user, uint256 amount) public virtual {

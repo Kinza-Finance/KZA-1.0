@@ -66,6 +66,19 @@ contract VoterTest is Test, BaseSetup {
         voter.updateVoteLogic(_newVoteLogic);
     }
 
+    function testUpdateMinter() public {
+        address _minter = address(1);
+        vm.prank(GOV);
+        voter.updateMinter(_minter);
+        assertEq(address(voter.minter()), _minter);
+    }
+
+    function testUpdateMinterNonOwner() public {
+        address _newMinter = address(1);
+        vm.expectRevert("Ownable: caller is not the owner");
+        voter.updateMinter(_newMinter);
+    }
+
     function testVote() public {
         singlePoolVote(alice, alice, USDC);
     }
@@ -100,6 +113,7 @@ contract VoterTest is Test, BaseSetup {
     function testVoteNextEpoch() public {
         singlePoolVote(alice, alice, USDC);
         skip(DURATION + 1);
+        minter.update_period();
         singlePoolVote(alice, alice, USDC);
     }
 
