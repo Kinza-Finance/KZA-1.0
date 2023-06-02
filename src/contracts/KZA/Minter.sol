@@ -124,6 +124,7 @@ contract Minter is Ownable {
                 }
             }
         }
+        voter.sync(epoch);
     }
 
     /// @notice notify the distributor on the reward amount for all pools
