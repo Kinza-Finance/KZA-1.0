@@ -263,8 +263,8 @@ contract AggregateBribe {
     }
     /// @notice allow batched reward claims
     /// @param tokens the reward token to claim
-    /// @param account the reward token to claim
-    /// @param to the reward token to claim
+    /// @param account the account that collects the reward
+    /// @param to the receiver of the reward
     function getRewardForOwner(address[] memory tokens, address account, address to) external lock  {
         require(msg.sender == voter || msg.sender == account, "only voter or self claim");
         for (uint i = 0; i < tokens.length; i++) {
