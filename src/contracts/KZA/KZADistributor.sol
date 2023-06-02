@@ -43,7 +43,7 @@ contract KZADistributor is Ownable {
 
     address public vault;
     IEmissionManager public emisisonManager;
-    IPool public pool;
+    IPool public immutable pool;
 
     /*//////////////////////////////////////////////////////////////
                                 EVENTS
