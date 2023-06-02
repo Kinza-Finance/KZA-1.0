@@ -185,7 +185,7 @@ contract XKZA is Ownable, ReentrancyGuard, ERC20("escrowed Kinza Token", "xKZA")
     /// @param _minRedeemRatio min redeem ratio
     /// @param _maxRedeemRatio max redeem ratio
     /// @param _minRedeemDuration min redeem duration
-    /// @param _maxRedeemDuration min redeem duration
+    /// @param _maxRedeemDuration max redeem duration
     function updateRedeemSettings(uint256 _minRedeemRatio, uint256 _maxRedeemRatio, uint256 _minRedeemDuration, uint256 _maxRedeemDuration) external onlyOwner {
       require(_minRedeemRatio <= _maxRedeemRatio, "updateRedeemSettings: wrong ratio values");
       require(_minRedeemDuration < _maxRedeemDuration, "updateRedeemSettings: wrong duration values");
