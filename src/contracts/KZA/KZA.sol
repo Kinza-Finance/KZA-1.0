@@ -24,12 +24,12 @@ contract KZA is ERC20("KINZA", "KZA"), ERC20Permit("Kinza") {
                             STORAGE VARIABLES 
     //////////////////////////////////////////////////////////////*/
 
-    bool public initialMinted;
     uint public newGovernanceProposedTime;
 
     address public minter;
     address public governance;
     address public newGovernance;
+    bool public initialMinted;
 
     /*//////////////////////////////////////////////////////////////
                                 EVENTS
