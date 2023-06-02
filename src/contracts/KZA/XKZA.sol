@@ -295,6 +295,8 @@ contract XKZA is Ownable, ReentrancyGuard, ERC20("escrowed Kinza Token", "xKZA")
       // make redeeming xKZA available again
       userReedemTotal[msg.sender] -= _redeem.xAmount;
       _transfer(address(this), msg.sender, _redeem.xAmount);
+      
+      voter.reVote(msg.sender);
 
       emit CancelRedeem(msg.sender, _redeem.xAmount);
 
