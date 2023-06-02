@@ -11,7 +11,7 @@ import {ERC20, ERC20Permit} from "@openzeppelin/token/ERC20/extensions/draft-ERC
 /// @notice KZA - Kinza protocol governance token
 /// @title KZA
 /// @notice  Minimal implmentation of a governance token
-contract KZA is ERC20("KINZA", "KZA"), ERC20Permit("Kinza") {
+contract KZA is ERC20("KINZA", "KZA"), ERC20Permit("KINZA") {
 
     /*//////////////////////////////////////////////////////////////
                         CONSTANTS & IMMUTABLES

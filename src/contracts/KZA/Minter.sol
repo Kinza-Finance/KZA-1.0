@@ -141,7 +141,7 @@ contract Minter is Ownable {
             if (amount != 0) {
                 rewardsCache[market] = 0;
                 KZA.increaseAllowance(distributor, amount);
-                // notifyReward would call safetTransferFrom
+                // notifyReward would call safeTransferFrom
                 IDistributor(distributor).notifyReward(market, amount);
             }
             unchecked {
