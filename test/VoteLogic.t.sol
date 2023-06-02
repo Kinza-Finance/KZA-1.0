@@ -75,6 +75,7 @@ contract VoteLogicTest is Test, BaseSetup {
         convert(alice, balance);
         redeem(alice, balance, duration);
         skip(duration + 1);
+        minter.update_period();
         vm.prank(alice);
         xkza.finalizeRedeem(0);
         assertEq(votelogic.balanceOf(alice), 0);
