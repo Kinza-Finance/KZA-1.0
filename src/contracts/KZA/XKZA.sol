@@ -295,8 +295,14 @@ contract XKZA is Ownable, ReentrancyGuard, ERC20("escrowed Kinza Token", "xKZA")
       // make redeeming xKZA available again
       userReedemTotal[msg.sender] -= _redeem.xAmount;
       _transfer(address(this), msg.sender, _redeem.xAmount);
-      
-      voter.reVote(msg.sender);
+
+      if (address(voter) != address(0)) {
+        uint256 before = KZA.balanceOf(address(this));
+        
+        voter.reVote(msg.sender);
+        // a sanity check to make sure the token balance on this contract remain the same
+        require(before == KZA.balanceOf(address(this)), "voter creates difference in locked token");
+      }
 
       emit CancelRedeem(msg.sender, _redeem.xAmount);
 
