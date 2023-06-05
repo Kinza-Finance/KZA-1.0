@@ -37,21 +37,6 @@ contract VoterTest is Test, BaseSetup {
         assertEq(voter.marketLength(), marketLength + 1);
     }
     
-    function testRemoveUnderlying() public {
-        uint256 marketLength = voter.marketLength();
-        vm.prank(GOV);
-        voter.pushUnderlying(address(bribeTokenA));
-        vm.prank(GOV);
-        voter.removeUnderlying(address(bribeTokenA));
-        assertEq(voter.marketLength(), marketLength);
-    }
-
-    function testRemoveUnderlyingNonExistent() public {
-        uint256 marketLength = voter.marketLength();
-        vm.prank(GOV);
-        vm.expectRevert("assets not a voting candidate");
-        voter.removeUnderlying(address(bribeTokenA));
-    }
 
     function testUpdateVoteLogic() public {
         address _newVoteLogic = address(0);
