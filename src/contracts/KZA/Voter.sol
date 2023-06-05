@@ -163,28 +163,6 @@ contract Voter is Ownable {
         emit MarketBribeCreated(_underlying, bribe);
     }
 
-    function removeUnderlying(address _underlying) external onlyOwner {
-        require(bribes[_underlying] != address(0), "assets not a voting candidate");
-        bribes[_underlying] = address(0);
-        // by now l > 0 since there is at least 1 underlying.
-        uint256 l = markets.length;
-        for (uint256 i; i < l;) {
-            if (markets[i] == _underlying) {
-                markets[l-1] = markets[i];
-                markets.pop();
-                emit MarketBribeRemoved(_underlying);
-                return;
-            }
-            unchecked {
-                ++i;
-            }
-        }
-        // only sanity check, the _underlying is certain to exist in the list
-        // if it exists in the bribes mapping and pass the initial require
-        revert();
-        
-    }
-
     function updateVoteLogic(address _newVoteLogic) external onlyOwner {
         voteLogic = IVoteLogic(_newVoteLogic);
         emit NewVoteLogic(_newVoteLogic);
