@@ -137,34 +137,32 @@ contract KZADistributor is Ownable {
             // so transferStrategy can pull this amount in total through increaseAllowance.
             IVault(vault).approveTransferStrat(_amount);
             
-            uint88[] memory rates = new uint88[](1);
-            address[] memory rewards = new address[](1);
-            rewards[0] = address(REWARD);
             address token;
             uint256 rate;
-            token = getReserveData(_market).variableDebtTokenAddress;
             if (DTokenVariable != 0) {
                 token = getReserveData(_market).variableDebtTokenAddress;
                 rate = DTokenVariable / REWARD_PERIOD;
-                emisisonManager.setDistributionEnd(token, address(REWARD),  uint32(block.timestamp + REWARD_PERIOD));
-                rates[0] = rate.toUint88();
-                emisisonManager.setEmissionPerSecond(token, rewards, rates);
+                _updateEmissionManager(token, address(REWARD), rate);
             }
             if (DTokenStable != 0) {
                 token = getReserveData(_market).stableDebtTokenAddress;
                 rate = DTokenStable / REWARD_PERIOD;
-                emisisonManager.setDistributionEnd(token, address(REWARD),  uint32(block.timestamp + REWARD_PERIOD));
-                rates[0] = rate.toUint88();
-                emisisonManager.setEmissionPerSecond(token, rewards, rates);
+                _updateEmissionManager(token, address(REWARD), rate);
             }
             if (amountAToken != 0) {
                 token = getReserveData(_market).aTokenAddress;
                 rate = amountAToken / REWARD_PERIOD;
-                emisisonManager.setDistributionEnd(token, address(REWARD),  uint32(block.timestamp + REWARD_PERIOD));
-                rates[0] = rate.toUint88();
-                emisisonManager.setEmissionPerSecond(token, rewards, rates);
+                _updateEmissionManager(token, address(REWARD), rate);
             }    
         }
+    }
+    function _updateEmissionManager(address _token, address _reward, uint256 _rate) internal {
+        uint88[] memory rates = new uint88[](1);
+        address[] memory rewards = new address[](1);
+        rewards[0] = address(_reward);
+        rates[0] = _rate.toUint88();
+        emisisonManager.setDistributionEnd(_token, _reward,  uint32(block.timestamp + REWARD_PERIOD));
+        emisisonManager.setEmissionPerSecond(_token, rewards, rates);
     }
     
 }
