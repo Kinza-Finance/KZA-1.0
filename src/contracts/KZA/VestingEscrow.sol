@@ -119,8 +119,8 @@ contract VestingEscrow is Ownable {
     /// @param _vester the vester to remove the vesting position from
     function removeVesting(address _vester) external onlyOwner {
         AccountInfo memory info = accountInfos[_vester];
-        uint256 claimed = withdrawals[_vester];
         require(info.total != 0, "non existent vesting position");
+        uint256 claimed = withdrawals[_vester];
         
         delete accountInfos[_vester];
         _removeFromVesters(_vester);

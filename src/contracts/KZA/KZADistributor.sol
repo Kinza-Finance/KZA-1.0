@@ -138,7 +138,7 @@ contract KZADistributor is Ownable {
             uint256 amountAToken = _amount - amountDToken;
 
             uint256 DTokenVariable = amountDToken * variableDebtTokenRatio() / PRECISION;
-            uint256 DTokenStable = amountDToken * stableDebtTokenRatio / PRECISION;
+            uint256 DTokenStable = amountDToken - DTokenVariable;
             
             REWARD.safeTransferFrom(minter, vault, _amount);
             // so transferStrategy can pull this amount in total through increaseAllowance.
