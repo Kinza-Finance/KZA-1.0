@@ -276,10 +276,10 @@ contract XKZA is Ownable, ReentrancyGuard, ERC20("escrowed Kinza Token", "xKZA")
     function finalizeRedeem(uint256 redeemIndex) external nonReentrant validateRedeem(msg.sender, redeemIndex) {
       RedeemInfo storage _redeem = userRedeems[msg.sender][redeemIndex];
       require(_currentBlockTimestamp() >= _redeem.endTime, "finalizeRedeem: vesting duration has not ended yet");
-
+      uint256 xAmount = _redeem.xAmount;
       // remove from SBT total
-      userReedemTotal[msg.sender] -= _redeem.xAmount;
-      _finalizeRedeem(msg.sender, _redeem.xAmount, _redeem.amount);
+      userReedemTotal[msg.sender] -= xAmount;
+      _finalizeRedeem(msg.sender, xAmount, _redeem.amount);
 
       // remove redeem entry
       _deleteRedeemEntry(redeemIndex);
@@ -297,9 +297,10 @@ contract XKZA is Ownable, ReentrancyGuard, ERC20("escrowed Kinza Token", "xKZA")
     function cancelRedeem(uint256 redeemIndex) external nonReentrant validateRedeem(msg.sender, redeemIndex) {
       RedeemInfo storage _redeem = userRedeems[msg.sender][redeemIndex];
 
+      uint256 xAmount = _redeem.xAmount;
       // make redeeming xKZA available again
-      userReedemTotal[msg.sender] -= _redeem.xAmount;
-      _transfer(address(this), msg.sender, _redeem.xAmount);
+      userReedemTotal[msg.sender] -= xAmount;
+      _transfer(address(this), msg.sender, xAmount);
 
       if (address(voter) != address(0)) {
         uint256 before = KZA.balanceOf(address(this));
@@ -309,7 +310,7 @@ contract XKZA is Ownable, ReentrancyGuard, ERC20("escrowed Kinza Token", "xKZA")
         require(before == KZA.balanceOf(address(this)), "voter creates difference in locked token");
       }
 
-      emit CancelRedeem(msg.sender, _redeem.xAmount);
+      emit CancelRedeem(msg.sender, xAmount);
 
       // remove redeem entry
       _deleteRedeemEntry(redeemIndex);

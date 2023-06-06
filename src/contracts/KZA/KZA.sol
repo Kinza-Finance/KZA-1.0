@@ -78,8 +78,9 @@ contract KZA is ERC20("KINZA", "KZA"), ERC20Permit("KINZA") {
     /// @notice newGovernance need to accept the governance role
     function acceptNewGovernance() onlyNewGov external {
       require(block.timestamp > governanceDelay + newGovernanceProposedTime, "pending governance delay");
-      emit NewGovernance(governance, newGovernance);
-      governance = newGovernance;
+      address _newGovernace = newGovernance;
+      emit NewGovernance(governance, _newGovernace);
+      governance = _newGovernace;
       newGovernance = address(0);
     }
 

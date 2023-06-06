@@ -108,9 +108,10 @@ contract Minter is Ownable {
         require(address(voter) != address(0), "voter needs to be set");
         require(current > lastEpoch, "only trigger each new week"); 
         epoch = current;
-        KZA.mint(address(this), emission);
-        uint256 prevEmission = emission;
-        emission = (emission * (PRECISION - decay)) / PRECISION;
+        uint256 _emission = emission;
+        uint256 prevEmission = _emission;
+        KZA.mint(address(this), _emission);
+        emission = (_emission * (PRECISION - decay)) / PRECISION;
         // get the scheduled total
         address[] memory reserves = getReserves();
         uint256 length = reserves.length;
