@@ -105,12 +105,6 @@ contract Voter is Ownable {
         _;
     }
 
-    modifier onlyNewEpoch(address _xTokenHolder) {
-        // ensure new epoch since last vote 
-        require((block.timestamp / DURATION) * DURATION > lastVoted[_xTokenHolder], "holder already voted in this epoch");
-        _;
-    }
-
     modifier onlyEpochSynced() {
         require(block.timestamp / DURATION == epoch, "epoch out of sync; please update epoch on Minter");
         _;
