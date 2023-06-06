@@ -2,6 +2,7 @@
 pragma solidity 0.8.17;
 
 import {ERC20, ERC20Permit} from "@openzeppelin/token/ERC20/extensions/draft-ERC20Permit.sol";
+import '../../libraries/UtilLib.sol';
 
 // | |/ /_ _| \ | |__  /  / \   
 // | ' / | ||  \| | / /  / _ \  
@@ -61,12 +62,14 @@ contract KZA is ERC20("KINZA", "KZA"), ERC20Permit("KINZA") {
                             CONSTRUCTOR
     //////////////////////////////////////////////////////////////*/
     constructor(address _governance) {
+        UtilLib.checkNonZeroAddress(_governance);
         governance = _governance;
     }
 
     /// @notice governance can use this to propose/cancel newGovernance.
     /// @param _newGovernace new governance
     function proposeNewGovernance(address _newGovernace) onlyGov external {
+      UtilLib.checkNonZeroAddress(_newGovernace);
       newGovernanceProposedTime = block.timestamp;
       newGovernance = _newGovernace;
       emit NewGovernanceProposal(_newGovernace);
@@ -83,6 +86,7 @@ contract KZA is ERC20("KINZA", "KZA"), ERC20Permit("KINZA") {
     /// @notice governance can use this to update bribe minter contracts
     /// @param _minter new minter
     function setBribeMinter(address _minter) onlyGov external {
+        UtilLib.checkNonZeroAddress(_minter);
         minter = _minter;
         emit NewBribeMinter(_minter);
     }

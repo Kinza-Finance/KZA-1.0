@@ -7,6 +7,7 @@ import '../../interfaces/IVoteLogic.sol';
 import '../../interfaces/IBribe.sol';
 import './AggregateBribe.sol';
 
+import '../../libraries/UtilLib.sol';
 // | |/ /_ _| \ | |__  /  / \   
 // | ' / | ||  \| | / /  / _ \  
 // | . \ | || |\  |/ /_ / ___ \ 
@@ -119,6 +120,11 @@ contract Voter is Ownable {
                             CONSTRUCTOR
     //////////////////////////////////////////////////////////////*/
     constructor(address _xToken, address _minter, address _voteLogic, address  _bribeAssetRegistry, address _governance) {
+        UtilLib.checkNonZeroAddress(_xToken);
+        UtilLib.checkNonZeroAddress(_minter);
+        UtilLib.checkNonZeroAddress(_voteLogic);
+        UtilLib.checkNonZeroAddress(_bribeAssetRegistry);
+        UtilLib.checkNonZeroAddress(_governance);
         xToken = _xToken;
         minter = _minter;
         voteLogic = IVoteLogic(_voteLogic);

@@ -9,6 +9,7 @@ import "../../interfaces/IDistributor.sol";
 import "../../interfaces/IKZA.sol";
 import "../../interfaces/IPool.sol";
 
+import '../../libraries/UtilLib.sol';
 // | |/ /_ _| \ | |__  /  / \   
 // | ' / | ||  \| | / /  / _ \  
 // | . \ | || |\  |/ /_ / ___ \ 
@@ -63,6 +64,9 @@ contract Minter is Ownable {
         address _KZA,
         address _governance
     ) {
+        UtilLib.checkNonZeroAddress(_pool);
+        UtilLib.checkNonZeroAddress(_KZA);
+        UtilLib.checkNonZeroAddress(_governance);
         pool = IPool(_pool);
         KZA = IKZA(_KZA);
         epoch = block.timestamp / WEEK;
@@ -73,6 +77,7 @@ contract Minter is Ownable {
     /// @param _newVoter the voter address that determines the allocation 
     ///        of each mint
     function updateVoter(address _newVoter) external onlyOwner {
+        UtilLib.checkNonZeroAddress(_newVoter);
         voter = IVoter(_newVoter);
         emit NewVoter(_newVoter);
     }
@@ -88,6 +93,7 @@ contract Minter is Ownable {
     /// @notice gov can update distributor 
     /// @param _newDistributor distributor can pull the emission out
     function updateDistributor(address _newDistributor) external onlyOwner {
+        UtilLib.checkNonZeroAddress(_newDistributor);
         distributor = _newDistributor;
         emit NewDistributor(_newDistributor);
     }

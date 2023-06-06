@@ -8,7 +8,7 @@ contract KZADistributorTest is Test, BaseSetup {
     function testSetVault() public {
         vm.prank(GOV);
         // it takes 0 too, but implies notifyReward would be paused
-        address newVault;
+        address newVault = address(1);
         dist.setVault(newVault);
         assertEq(address(dist.vault()), newVault);
     }
@@ -21,7 +21,7 @@ contract KZADistributorTest is Test, BaseSetup {
     }
 
     function testSetEmissionManager() public {
-        address newEmissionManager;
+        address newEmissionManager = address(1);
         vm.prank(GOV);
         dist.setEmissionManager(newEmissionManager);
         assertEq(address(dist.emisisonManager()), newEmissionManager);

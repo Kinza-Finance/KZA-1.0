@@ -4,6 +4,7 @@ pragma solidity 0.8.17;
 import "@openzeppelin/access/Ownable.sol";
 import "../../interfaces/IXToken.sol";
 
+import '../../libraries/UtilLib.sol';
 // | |/ /_ _| \ | |__  /  / \   
 // | ' / | ||  \| | / /  / _ \  
 // | . \ | || |\  |/ /_ / ___ \ 
@@ -39,6 +40,8 @@ contract VoteLogic is Ownable {
         address _xKZA,
         address _governance
     ) {
+        UtilLib.checkNonZeroAddress(_xKZA);
+        UtilLib.checkNonZeroAddress(_governance);
         XToken = IXToken(_xKZA);
         transferOwnership(_governance);
 

@@ -12,6 +12,8 @@ import "@openzeppelin/utils/Address.sol";
 import "../../interfaces/IKZA.sol";
 import "../../interfaces/IVoter.sol";
 
+import '../../libraries/UtilLib.sol';
+
 // | |/ /_ _| \ | |__  /  / \   
 // | ' / | ||  \| | / /  / _ \  
 // | . \ | || |\  |/ /_ / ___ \ 
@@ -102,6 +104,8 @@ contract XKZA is Ownable, ReentrancyGuard, ERC20("escrowed Kinza Token", "xKZA")
                           CONSTRUCTOR
     //////////////////////////////////////////////////////////////*/
     constructor(address _KZA, address _governance) {
+      UtilLib.checkNonZeroAddress(_KZA);
+      UtilLib.checkNonZeroAddress(_governance);
       KZA = IKZA(_KZA);
       _transferWhitelist.add(address(this));
       transferOwnership(_governance);
@@ -178,6 +182,7 @@ contract XKZA is Ownable, ReentrancyGuard, ERC20("escrowed Kinza Token", "xKZA")
 
     /// @param _newVoter new voter contract
     function updateVoter(address _newVoter) external onlyOwner {
+      UtilLib.checkNonZeroAddress(_newVoter);
       voter = IVoter(_newVoter);
       emit NewVoter(_newVoter);
     }

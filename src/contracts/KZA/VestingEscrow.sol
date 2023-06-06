@@ -6,6 +6,7 @@ import "@openzeppelin/access/Ownable.sol";
 
 import "../../interfaces/IKZA.sol";
 
+import '../../libraries/UtilLib.sol';
 // | |/ /_ _| \ | |__  /  / \   
 // | ' / | ||  \| | / /  / _ \  
 // | . \ | || |\  |/ /_ / ___ \ 
@@ -74,6 +75,8 @@ contract VestingEscrow is Ownable {
                           CONSTRUCTOR
     //////////////////////////////////////////////////////////////*/
     constructor(address _kza, address _gov) {
+        UtilLib.checkNonZeroAddress(_kza);
+        UtilLib.checkNonZeroAddress(_gov);
         KZA = IKZA(_kza);
         transferOwnership(_gov);
     }
