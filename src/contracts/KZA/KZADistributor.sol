@@ -11,6 +11,7 @@ import "../../interfaces/IPool.sol";
 import "../../interfaces/IVault.sol";
 import "../../libraries/DataTypes.sol";
 
+import '../../libraries/UtilLib.sol';
 
 
 // | |/ /_ _| \ | |__  /  / \   
@@ -53,6 +54,10 @@ contract KZADistributor is Ownable {
     event NewVariableDebtTokenRatio(uint256 newVariableDebtTokenRatio);
 
     constructor(address _governance, address _reward, address _minter, address _pool) {
+        UtilLib.checkNonZeroAddress(_governance);
+        UtilLib.checkNonZeroAddress(_reward);
+        UtilLib.checkNonZeroAddress(_minter);
+        UtilLib.checkNonZeroAddress(_pool);
         transferOwnership(_governance);
         REWARD = IERC20(_reward);
         minter = _minter;
@@ -91,6 +96,7 @@ contract KZADistributor is Ownable {
     /// @notice vault holds escrow of the reward token
     /// @param _newVault address of the new vault
     function setVault(address _newVault) external onlyOwner {
+        UtilLib.checkNonZeroAddress(_newVault);
         address oldVault = vault;
         vault = _newVault;
         emit NewVault(oldVault, _newVault);
@@ -99,6 +105,7 @@ contract KZADistributor is Ownable {
     /// @notice emissionManager is where a/dToken holder can claim reward
     /// @param _newEmissionManager address of the new emissionManager
     function setEmissionManager(address _newEmissionManager) external onlyOwner {
+        UtilLib.checkNonZeroAddress(_newEmissionManager);
         address oldmanager = address(emisisonManager);
         emisisonManager = IEmissionManager(_newEmissionManager);
         emit NewVault(oldmanager, _newEmissionManager);

@@ -4,6 +4,7 @@ pragma solidity 0.8.17;
 import "@openzeppelin/access/Ownable.sol";
 import "../../interfaces/IKZA.sol";
 
+import '../../libraries/UtilLib.sol';
 // | |/ /_ _| \ | |__  /  / \   
 // | ' / | ||  \| | / /  / _ \  
 // | . \ | || |\  |/ /_ / ___ \ 
@@ -24,6 +25,9 @@ contract RewardsVault is Ownable {
     event NewTransferStrat(address oldTransferStrategy, address newTransferStrategy);
 
     constructor(address _governance, address _distributor, address _reward) {
+        UtilLib.checkNonZeroAddress(_governance);
+        UtilLib.checkNonZeroAddress(_distributor);
+        UtilLib.checkNonZeroAddress(_reward);
         transferOwnership(_governance);
         REWARD = IKZA(_reward);
         distributor = _distributor;
