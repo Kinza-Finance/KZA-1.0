@@ -123,6 +123,7 @@ contract VestingEscrow is Ownable {
         require(info.total != 0, "non existent vesting position");
         
         delete accountInfos[_vester];
+        _removeFromVesters(_vester);
         withdrawals[_vester] = 0;
 
         distributed -= info.total;
@@ -214,6 +215,20 @@ contract VestingEscrow is Ownable {
     /*//////////////////////////////////////////////////////////////
                          INTERNAL FUNCTION
     //////////////////////////////////////////////////////////////*/
+
+    function _removeFromVesters(address _vester) internal {
+        uint256 l = vesters.length;
+        for (uint256 i; i < l;) {
+            if (vesters[i] == _vester) {
+                vesters[i] = vesters[l-1];
+                vesters.pop();
+                return;
+            }
+            unchecked {
+                ++i;
+            }
+        }
+    }
 
     /// @notice internal function
     /// @param _vester vester
