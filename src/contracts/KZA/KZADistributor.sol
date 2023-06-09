@@ -133,6 +133,7 @@ contract KZADistributor is Ownable {
         // if vault is not set, this would block the notifyRewardCall
         require(vault != address(0), "vault needs to be set");
         require(address(emisisonManager) != address(0), "emisisonManager needs to be set");
+        address _vault = vault;
         if (_amount != 0 ) {
             uint256 amountDToken = _amount * DTokenRatio() / PRECISION;
             uint256 amountAToken = _amount - amountDToken;
@@ -140,9 +141,9 @@ contract KZADistributor is Ownable {
             uint256 DTokenVariable = amountDToken * variableDebtTokenRatio() / PRECISION;
             uint256 DTokenStable = amountDToken - DTokenVariable;
             
-            REWARD.safeTransferFrom(minter, vault, _amount);
+            REWARD.safeTransferFrom(minter, _vault, _amount);
             // so transferStrategy can pull this amount in total through increaseAllowance.
-            IVault(vault).approveTransferStrat(_amount);
+            IVault(_vault).approveTransferStrat(_amount);
             
             address token;
             uint256 rate;
