@@ -247,7 +247,7 @@ contract VestingEscrow is Ownable {
         if ((claimable - claimed) < _amount) {
             _amount = claimable - claimed;
         }
-        withdrawals[_vester] += _amount;
+        withdrawals[_vester] = claimed + _amount;
         KZA.safeTransfer(_to, _amount);
         emit Claimed(_vester, _to, _amount);
     }
