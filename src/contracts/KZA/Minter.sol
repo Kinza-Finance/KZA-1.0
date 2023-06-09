@@ -118,15 +118,23 @@ contract Minter is Ownable {
         if (length != 0) {
             address market;
             uint256 reward;
-            uint256 totalWeight = voter.totalWeight();
-            if (totalWeight != 0) {
-                for (uint i; i < length;) {
+            uint256 totalWeight;
+            uint256[] memory votes = new uint256[](length);
+            for (uint i; i < length;) {
                 market = reserves[i];
-                uint256 vote = voter.weights(market);
-                reward = prevEmission * vote / totalWeight;
-                rewardsCache[market] += reward;
+                votes[i] = voter.weights(market);
+                totalWeight += votes[i];
                 unchecked {
                     ++i;
+                }  
+            }
+            if (totalWeight != 0) {
+                for (uint i; i < length;) {
+                    market = reserves[i];
+                    reward = prevEmission * votes[i] / totalWeight;
+                    rewardsCache[market] += reward;
+                    unchecked {
+                        ++i;
                     }  
                 }
             }
