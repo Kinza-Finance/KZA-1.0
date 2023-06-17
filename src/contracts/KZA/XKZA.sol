@@ -12,6 +12,8 @@ import "@openzeppelin/utils/Address.sol";
 import "../../interfaces/IKZA.sol";
 import "../../interfaces/IVoter.sol";
 
+import '../../libraries/UtilLib.sol';
+
 // | |/ /_ _| \ | |__  /  / \   
 // | ' / | ||  \| | / /  / _ \  
 // | . \ | || |\  |/ /_ / ___ \ 
@@ -102,6 +104,8 @@ contract XKZA is Ownable, ReentrancyGuard, ERC20("escrowed Kinza Token", "xKZA")
                           CONSTRUCTOR
     //////////////////////////////////////////////////////////////*/
     constructor(address _KZA, address _governance) {
+      UtilLib.checkNonZeroAddress(_KZA);
+      UtilLib.checkNonZeroAddress(_governance);
       KZA = IKZA(_KZA);
       _transferWhitelist.add(address(this));
       transferOwnership(_governance);
@@ -178,6 +182,7 @@ contract XKZA is Ownable, ReentrancyGuard, ERC20("escrowed Kinza Token", "xKZA")
 
     /// @param _newVoter new voter contract
     function updateVoter(address _newVoter) external onlyOwner {
+      UtilLib.checkNonZeroAddress(_newVoter);
       voter = IVoter(_newVoter);
       emit NewVoter(_newVoter);
     }
@@ -185,7 +190,7 @@ contract XKZA is Ownable, ReentrancyGuard, ERC20("escrowed Kinza Token", "xKZA")
     /// @param _minRedeemRatio min redeem ratio
     /// @param _maxRedeemRatio max redeem ratio
     /// @param _minRedeemDuration min redeem duration
-    /// @param _maxRedeemDuration min redeem duration
+    /// @param _maxRedeemDuration max redeem duration
     function updateRedeemSettings(uint256 _minRedeemRatio, uint256 _maxRedeemRatio, uint256 _minRedeemDuration, uint256 _maxRedeemDuration) external onlyOwner {
       require(_minRedeemRatio <= _maxRedeemRatio, "updateRedeemSettings: wrong ratio values");
       require(_minRedeemDuration < _maxRedeemDuration, "updateRedeemSettings: wrong duration values");
@@ -271,10 +276,10 @@ contract XKZA is Ownable, ReentrancyGuard, ERC20("escrowed Kinza Token", "xKZA")
     function finalizeRedeem(uint256 redeemIndex) external nonReentrant validateRedeem(msg.sender, redeemIndex) {
       RedeemInfo storage _redeem = userRedeems[msg.sender][redeemIndex];
       require(_currentBlockTimestamp() >= _redeem.endTime, "finalizeRedeem: vesting duration has not ended yet");
-
+      uint256 xAmount = _redeem.xAmount;
       // remove from SBT total
-      userReedemTotal[msg.sender] -= _redeem.xAmount;
-      _finalizeRedeem(msg.sender, _redeem.xAmount, _redeem.amount);
+      userReedemTotal[msg.sender] -= xAmount;
+      _finalizeRedeem(msg.sender, xAmount, _redeem.amount);
 
       // remove redeem entry
       _deleteRedeemEntry(redeemIndex);
@@ -292,11 +297,20 @@ contract XKZA is Ownable, ReentrancyGuard, ERC20("escrowed Kinza Token", "xKZA")
     function cancelRedeem(uint256 redeemIndex) external nonReentrant validateRedeem(msg.sender, redeemIndex) {
       RedeemInfo storage _redeem = userRedeems[msg.sender][redeemIndex];
 
+      uint256 xAmount = _redeem.xAmount;
       // make redeeming xKZA available again
-      userReedemTotal[msg.sender] -= _redeem.xAmount;
-      _transfer(address(this), msg.sender, _redeem.xAmount);
+      userReedemTotal[msg.sender] -= xAmount;
+      _transfer(address(this), msg.sender, xAmount);
 
-      emit CancelRedeem(msg.sender, _redeem.xAmount);
+      if (address(voter) != address(0)) {
+        uint256 before = KZA.balanceOf(address(this));
+        
+        voter.reVote(msg.sender);
+        // a sanity check to make sure the token balance on this contract remain the same
+        require(before == KZA.balanceOf(address(this)), "voter creates difference in locked token");
+      }
+
+      emit CancelRedeem(msg.sender, xAmount);
 
       // remove redeem entry
       _deleteRedeemEntry(redeemIndex);

@@ -37,21 +37,6 @@ contract VoterTest is Test, BaseSetup {
         assertEq(voter.marketLength(), marketLength + 1);
     }
     
-    function testRemoveUnderlying() public {
-        uint256 marketLength = voter.marketLength();
-        vm.prank(GOV);
-        voter.pushUnderlying(address(bribeTokenA));
-        vm.prank(GOV);
-        voter.removeUnderlying(address(bribeTokenA));
-        assertEq(voter.marketLength(), marketLength);
-    }
-
-    function testRemoveUnderlyingNonExistent() public {
-        uint256 marketLength = voter.marketLength();
-        vm.prank(GOV);
-        vm.expectRevert("assets not a voting candidate");
-        voter.removeUnderlying(address(bribeTokenA));
-    }
 
     function testUpdateVoteLogic() public {
         address _newVoteLogic = address(0);
@@ -64,6 +49,19 @@ contract VoterTest is Test, BaseSetup {
         address _newVoteLogic = address(0);
         vm.expectRevert("Ownable: caller is not the owner");
         voter.updateVoteLogic(_newVoteLogic);
+    }
+
+    function testUpdateMinter() public {
+        address _minter = address(1);
+        vm.prank(GOV);
+        voter.updateMinter(_minter);
+        assertEq(address(voter.minter()), _minter);
+    }
+
+    function testUpdateMinterNonOwner() public {
+        address _newMinter = address(1);
+        vm.expectRevert("Ownable: caller is not the owner");
+        voter.updateMinter(_newMinter);
     }
 
     function testVote() public {
@@ -100,6 +98,7 @@ contract VoterTest is Test, BaseSetup {
     function testVoteNextEpoch() public {
         singlePoolVote(alice, alice, USDC);
         skip(DURATION + 1);
+        minter.update_period();
         singlePoolVote(alice, alice, USDC);
     }
 

@@ -170,6 +170,7 @@ contract XKZATest is Test, BaseSetup {
         convert(alice, balance);
         redeem(alice, balance, duration);
         skip(duration);
+        minter.update_period();
         vm.prank(alice);
         xkza.finalizeRedeem(0);
         assertEq(balance, kza.balanceOf(alice));
@@ -182,6 +183,7 @@ contract XKZATest is Test, BaseSetup {
         convert(alice, balance);
         redeem(alice, balance, duration);
         skip(duration);
+        minter.update_period();
         vm.prank(alice);
         xkza.finalizeRedeem(0);
         assertEq(minRatio * balance / 100, kza.balanceOf(alice));
@@ -206,6 +208,7 @@ contract XKZATest is Test, BaseSetup {
         convert(alice, balance);
         redeem(alice, balance, duration);
         skip(duration);
+        minter.update_period();
         vm.prank(alice);
         xkza.cancelRedeem(0);
         assertEq(xkza.balanceOf(alice), balance);

@@ -9,6 +9,7 @@ import "../../interfaces/IDistributor.sol";
 import "../../interfaces/IKZA.sol";
 import "../../interfaces/IPool.sol";
 
+import '../../libraries/UtilLib.sol';
 // | |/ /_ _| \ | |__  /  / \   
 // | ' / | ||  \| | / /  / _ \  
 // | . \ | || |\  |/ /_ / ___ \ 
@@ -29,7 +30,7 @@ contract Minter is Ownable {
                         CONSTANTS & IMMUTABLES
     //////////////////////////////////////////////////////////////*/
 
-    uint internal constant WEEK = 86400 * 7; // allows minting once per week (reset every Thursday 00:00 UTC)
+    uint internal constant WEEK = 7 days; // allows minting once per week (reset every Thursday 00:00 UTC)
     uint internal constant PRECISION = 10000;
     IKZA public immutable KZA;
     IPool public immutable pool;
@@ -63,6 +64,9 @@ contract Minter is Ownable {
         address _KZA,
         address _governance
     ) {
+        UtilLib.checkNonZeroAddress(_pool);
+        UtilLib.checkNonZeroAddress(_KZA);
+        UtilLib.checkNonZeroAddress(_governance);
         pool = IPool(_pool);
         KZA = IKZA(_KZA);
         epoch = block.timestamp / WEEK;
@@ -73,6 +77,7 @@ contract Minter is Ownable {
     /// @param _newVoter the voter address that determines the allocation 
     ///        of each mint
     function updateVoter(address _newVoter) external onlyOwner {
+        UtilLib.checkNonZeroAddress(_newVoter);
         voter = IVoter(_newVoter);
         emit NewVoter(_newVoter);
     }
@@ -88,6 +93,7 @@ contract Minter is Ownable {
     /// @notice gov can update distributor 
     /// @param _newDistributor distributor can pull the emission out
     function updateDistributor(address _newDistributor) external onlyOwner {
+        UtilLib.checkNonZeroAddress(_newDistributor);
         distributor = _newDistributor;
         emit NewDistributor(_newDistributor);
     }
@@ -102,28 +108,38 @@ contract Minter is Ownable {
         require(address(voter) != address(0), "voter needs to be set");
         require(current > lastEpoch, "only trigger each new week"); 
         epoch = current;
-        KZA.mint(address(this), emission);
-        uint256 prevEmission = emission;
-        emission = (emission * (PRECISION - decay)) / PRECISION;
+        uint256 _emission = emission;
+        uint256 prevEmission = _emission;
+        KZA.mint(address(this), _emission);
+        emission = (_emission * (PRECISION - decay)) / PRECISION;
         // get the scheduled total
         address[] memory reserves = getReserves();
         uint256 length = reserves.length;
         if (length != 0) {
             address market;
             uint256 reward;
-            uint256 totalWeight = voter.totalWeight();
-            if (totalWeight != 0) {
-                for (uint i; i < length;) {
+            uint256 totalWeight;
+            uint256[] memory votes = new uint256[](length);
+            for (uint i; i < length;) {
                 market = reserves[i];
-                uint256 vote = voter.weights(market);
-                reward = prevEmission * vote / totalWeight;
-                rewardsCache[market] += reward;
+                votes[i] = voter.weights(market);
+                totalWeight += votes[i];
                 unchecked {
                     ++i;
+                }  
+            }
+            if (totalWeight != 0) {
+                for (uint i; i < length;) {
+                    market = reserves[i];
+                    reward = prevEmission * votes[i] / totalWeight;
+                    rewardsCache[market] += reward;
+                    unchecked {
+                        ++i;
                     }  
                 }
             }
         }
+        voter.sync(epoch);
     }
 
     /// @notice notify the distributor on the reward amount for all pools
@@ -141,7 +157,7 @@ contract Minter is Ownable {
             if (amount != 0) {
                 rewardsCache[market] = 0;
                 KZA.increaseAllowance(distributor, amount);
-                // notifyReward would call safetTransferFrom
+                // notifyReward would call safeTransferFrom
                 IDistributor(distributor).notifyReward(market, amount);
             }
             unchecked {

@@ -2,6 +2,7 @@
 pragma solidity 0.8.17;
 
 import {ERC20, ERC20Permit} from "@openzeppelin/token/ERC20/extensions/draft-ERC20Permit.sol";
+import '../../libraries/UtilLib.sol';
 
 // | |/ /_ _| \ | |__  /  / \   
 // | ' / | ||  \| | / /  / _ \  
@@ -11,7 +12,7 @@ import {ERC20, ERC20Permit} from "@openzeppelin/token/ERC20/extensions/draft-ERC
 /// @notice KZA - Kinza protocol governance token
 /// @title KZA
 /// @notice  Minimal implmentation of a governance token
-contract KZA is ERC20("KINZA", "KZA"), ERC20Permit("Kinza") {
+contract KZA is ERC20("KINZA", "KZA"), ERC20Permit("KINZA") {
 
     /*//////////////////////////////////////////////////////////////
                         CONSTANTS & IMMUTABLES
@@ -24,12 +25,12 @@ contract KZA is ERC20("KINZA", "KZA"), ERC20Permit("Kinza") {
                             STORAGE VARIABLES 
     //////////////////////////////////////////////////////////////*/
 
-    bool public initialMinted;
     uint public newGovernanceProposedTime;
 
     address public minter;
     address public governance;
     address public newGovernance;
+    bool public initialMinted;
 
     /*//////////////////////////////////////////////////////////////
                                 EVENTS
@@ -61,12 +62,14 @@ contract KZA is ERC20("KINZA", "KZA"), ERC20Permit("Kinza") {
                             CONSTRUCTOR
     //////////////////////////////////////////////////////////////*/
     constructor(address _governance) {
+        UtilLib.checkNonZeroAddress(_governance);
         governance = _governance;
     }
 
     /// @notice governance can use this to propose/cancel newGovernance.
     /// @param _newGovernace new governance
     function proposeNewGovernance(address _newGovernace) onlyGov external {
+      UtilLib.checkNonZeroAddress(_newGovernace);
       newGovernanceProposedTime = block.timestamp;
       newGovernance = _newGovernace;
       emit NewGovernanceProposal(_newGovernace);
@@ -75,14 +78,16 @@ contract KZA is ERC20("KINZA", "KZA"), ERC20Permit("Kinza") {
     /// @notice newGovernance need to accept the governance role
     function acceptNewGovernance() onlyNewGov external {
       require(block.timestamp > governanceDelay + newGovernanceProposedTime, "pending governance delay");
-      emit NewGovernance(governance, newGovernance);
-      governance = newGovernance;
+      address _newGovernace = newGovernance;
+      emit NewGovernance(governance, _newGovernace);
+      governance = _newGovernace;
       newGovernance = address(0);
     }
 
     /// @notice governance can use this to update bribe minter contracts
     /// @param _minter new minter
     function setBribeMinter(address _minter) onlyGov external {
+        UtilLib.checkNonZeroAddress(_minter);
         minter = _minter;
         emit NewBribeMinter(_minter);
     }

@@ -29,10 +29,11 @@ contract MinterTest is Test, BaseSetup {
     }
     // test update epoch
     function testUpdateEpoch() public {
+        uint256 balanceBefore = kza.balanceOf(address(minter));
         skip(DURATION + 1);
         uint256 emission = minter.emission();
         minter.update_period();
-        assertEq(kza.balanceOf(address(minter)), emission);
+        assertEq(balanceBefore + emission, kza.balanceOf(address(minter)));
     }
 
     function testUpdateEpochWithinSameWeek() public {

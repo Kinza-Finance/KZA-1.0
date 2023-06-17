@@ -10,6 +10,7 @@ import "../../interfaces/IBribe.sol";
 import "../../interfaces/IVoter.sol";
 import "../../interfaces/IPool.sol";
 
+import '../../libraries/UtilLib.sol';
 // | |/ /_ _| \ | |__  /  / \   
 // | ' / | ||  \| | / /  / _ \  
 // | . \ | || |\  |/ /_ / ___ \ 
@@ -37,6 +38,10 @@ contract ReserveFeeDistributor is Ownable {
     
 
     constructor(address _governance, address _treasury, address _pool, address _voter) {
+        UtilLib.checkNonZeroAddress(_governance);
+        UtilLib.checkNonZeroAddress(_treasury);
+        UtilLib.checkNonZeroAddress(_pool);
+        UtilLib.checkNonZeroAddress(_voter);
         transferOwnership(_governance);
         treasury = _treasury;
         pool = IPool(_pool);

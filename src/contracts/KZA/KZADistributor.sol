@@ -11,6 +11,7 @@ import "../../interfaces/IPool.sol";
 import "../../interfaces/IVault.sol";
 import "../../libraries/DataTypes.sol";
 
+import '../../libraries/UtilLib.sol';
 
 
 // | |/ /_ _| \ | |__  /  / \   
@@ -43,7 +44,7 @@ contract KZADistributor is Ownable {
 
     address public vault;
     IEmissionManager public emisisonManager;
-    IPool public pool;
+    IPool public immutable pool;
 
     /*//////////////////////////////////////////////////////////////
                                 EVENTS
@@ -53,6 +54,10 @@ contract KZADistributor is Ownable {
     event NewVariableDebtTokenRatio(uint256 newVariableDebtTokenRatio);
 
     constructor(address _governance, address _reward, address _minter, address _pool) {
+        UtilLib.checkNonZeroAddress(_governance);
+        UtilLib.checkNonZeroAddress(_reward);
+        UtilLib.checkNonZeroAddress(_minter);
+        UtilLib.checkNonZeroAddress(_pool);
         transferOwnership(_governance);
         REWARD = IERC20(_reward);
         minter = _minter;
@@ -91,6 +96,7 @@ contract KZADistributor is Ownable {
     /// @notice vault holds escrow of the reward token
     /// @param _newVault address of the new vault
     function setVault(address _newVault) external onlyOwner {
+        UtilLib.checkNonZeroAddress(_newVault);
         address oldVault = vault;
         vault = _newVault;
         emit NewVault(oldVault, _newVault);
@@ -99,6 +105,7 @@ contract KZADistributor is Ownable {
     /// @notice emissionManager is where a/dToken holder can claim reward
     /// @param _newEmissionManager address of the new emissionManager
     function setEmissionManager(address _newEmissionManager) external onlyOwner {
+        UtilLib.checkNonZeroAddress(_newEmissionManager);
         address oldmanager = address(emisisonManager);
         emisisonManager = IEmissionManager(_newEmissionManager);
         emit NewVault(oldmanager, _newEmissionManager);
@@ -126,45 +133,44 @@ contract KZADistributor is Ownable {
         // if vault is not set, this would block the notifyRewardCall
         require(vault != address(0), "vault needs to be set");
         require(address(emisisonManager) != address(0), "emisisonManager needs to be set");
+        address _vault = vault;
         if (_amount != 0 ) {
             uint256 amountDToken = _amount * DTokenRatio() / PRECISION;
             uint256 amountAToken = _amount - amountDToken;
 
             uint256 DTokenVariable = amountDToken * variableDebtTokenRatio() / PRECISION;
-            uint256 DTokenStable = amountDToken * stableDebtTokenRatio / PRECISION;
+            uint256 DTokenStable = amountDToken - DTokenVariable;
             
-            REWARD.transferFrom(minter, vault, _amount);
+            REWARD.safeTransferFrom(minter, _vault, _amount);
             // so transferStrategy can pull this amount in total through increaseAllowance.
-            IVault(vault).approveTransferStrat(_amount);
+            IVault(_vault).approveTransferStrat(_amount);
             
-            uint88[] memory rates = new uint88[](1);
-            address[] memory rewards = new address[](1);
-            rewards[0] = address(REWARD);
             address token;
             uint256 rate;
-            token = getReserveData(_market).variableDebtTokenAddress;
             if (DTokenVariable != 0) {
                 token = getReserveData(_market).variableDebtTokenAddress;
                 rate = DTokenVariable / REWARD_PERIOD;
-                emisisonManager.setDistributionEnd(token, address(REWARD),  uint32(block.timestamp + REWARD_PERIOD));
-                rates[0] = rate.toUint88();
-                emisisonManager.setEmissionPerSecond(token, rewards, rates);
+                _updateEmissionManager(token, address(REWARD), rate);
             }
             if (DTokenStable != 0) {
                 token = getReserveData(_market).stableDebtTokenAddress;
                 rate = DTokenStable / REWARD_PERIOD;
-                emisisonManager.setDistributionEnd(token, address(REWARD),  uint32(block.timestamp + REWARD_PERIOD));
-                rates[0] = rate.toUint88();
-                emisisonManager.setEmissionPerSecond(token, rewards, rates);
+                _updateEmissionManager(token, address(REWARD), rate);
             }
             if (amountAToken != 0) {
                 token = getReserveData(_market).aTokenAddress;
                 rate = amountAToken / REWARD_PERIOD;
-                emisisonManager.setDistributionEnd(token, address(REWARD),  uint32(block.timestamp + REWARD_PERIOD));
-                rates[0] = rate.toUint88();
-                emisisonManager.setEmissionPerSecond(token, rewards, rates);
+                _updateEmissionManager(token, address(REWARD), rate);
             }    
         }
+    }
+    function _updateEmissionManager(address _token, address _reward, uint256 _rate) internal {
+        uint88[] memory rates = new uint88[](1);
+        address[] memory rewards = new address[](1);
+        rewards[0] = address(_reward);
+        rates[0] = _rate.toUint88();
+        emisisonManager.setDistributionEnd(_token, _reward,  uint32(block.timestamp + REWARD_PERIOD));
+        emisisonManager.setEmissionPerSecond(_token, rewards, rates);
     }
     
 }

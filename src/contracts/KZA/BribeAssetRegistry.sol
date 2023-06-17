@@ -3,6 +3,7 @@ pragma solidity 0.8.17;
 
 import "@openzeppelin/access/Ownable.sol";
 
+import '../../libraries/UtilLib.sol';
 // | |/ /_ _| \ | |__  /  / \   
 // | ' / | ||  \| | / /  / _ \  
 // | . \ | || |\  |/ /_ / ___ \ 
@@ -20,6 +21,7 @@ contract BribeAssetRegistry is Ownable {
     event RemoveWhitelistAsset(address indexed asset);
 
     constructor(address _governance) {
+        UtilLib.checkNonZeroAddress(_governance);
         transferOwnership(_governance);
     }
 
