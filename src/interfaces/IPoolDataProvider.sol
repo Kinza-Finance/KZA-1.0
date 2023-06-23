@@ -5,4 +5,5 @@ interface IPoolDataProvider {
         address tokenAddress;
     }
   function getAllATokens() external returns(TokenData[] memory);
+  function getAllReservesTokens() external returns(TokenData[] memory);
 }
