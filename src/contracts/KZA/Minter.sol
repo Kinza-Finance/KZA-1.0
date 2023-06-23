@@ -30,7 +30,7 @@ contract Minter is Ownable {
                         CONSTANTS & IMMUTABLES
     //////////////////////////////////////////////////////////////*/
 
-    uint internal constant DURATION = 7 days; // allows minting once per week (reset every Thursday 00:00 UTC)
+    uint internal constant DURATION = 2 hours; // allows minting once per week (reset every Thursday 00:00 UTC)
     uint internal constant PRECISION = 10000;
     IKZA public immutable KZA;
     IPool public immutable pool;

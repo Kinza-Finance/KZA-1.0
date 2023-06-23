@@ -22,7 +22,7 @@ contract Voter is Ownable {
     /*//////////////////////////////////////////////////////////////
                       CONSTANTS & IMMUTABLES
     //////////////////////////////////////////////////////////////*/
-    uint internal constant DURATION = 7 days; // rewards are released over 7 days
+    uint internal constant DURATION = 2 hours; // rewards are released over 7 days
     address public immutable xToken; // the xtoken that can vote on this contract
     address public immutable bribeAssetRegistry;
 
