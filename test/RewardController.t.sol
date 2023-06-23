@@ -23,6 +23,7 @@ contract RewardControllerTest is Test, BaseSetup {
         assertEq(kza.balanceOf(address(rv)), emission);
         // skip the emission duration
         skip(DURATION);
+        minter.update_period();
     }
 
     function testClaimCheckLock() public {

@@ -6,6 +6,7 @@ import "@openzeppelin/access/Ownable.sol";
 
 import "../../interfaces/IKZA.sol";
 
+import '../../libraries/UtilLib.sol';
 // | |/ /_ _| \ | |__  /  / \   
 // | ' / | ||  \| | / /  / _ \  
 // | . \ | || |\  |/ /_ / ___ \ 
@@ -74,6 +75,8 @@ contract VestingEscrow is Ownable {
                           CONSTRUCTOR
     //////////////////////////////////////////////////////////////*/
     constructor(address _kza, address _gov) {
+        UtilLib.checkNonZeroAddress(_kza);
+        UtilLib.checkNonZeroAddress(_gov);
         KZA = IKZA(_kza);
         transferOwnership(_gov);
     }
@@ -116,10 +119,11 @@ contract VestingEscrow is Ownable {
     /// @param _vester the vester to remove the vesting position from
     function removeVesting(address _vester) external onlyOwner {
         AccountInfo memory info = accountInfos[_vester];
-        uint256 claimed = withdrawals[_vester];
         require(info.total != 0, "non existent vesting position");
+        uint256 claimed = withdrawals[_vester];
         
         delete accountInfos[_vester];
+        _removeFromVesters(_vester);
         withdrawals[_vester] = 0;
 
         distributed -= info.total;
@@ -212,6 +216,20 @@ contract VestingEscrow is Ownable {
                          INTERNAL FUNCTION
     //////////////////////////////////////////////////////////////*/
 
+    function _removeFromVesters(address _vester) internal {
+        uint256 l = vesters.length;
+        for (uint256 i; i < l;) {
+            if (vesters[i] == _vester) {
+                vesters[i] = vesters[l-1];
+                vesters.pop();
+                return;
+            }
+            unchecked {
+                ++i;
+            }
+        }
+    }
+
     /// @notice internal function
     /// @param _vester vester
     /// @param _to receiver
@@ -229,7 +247,7 @@ contract VestingEscrow is Ownable {
         if ((claimable - claimed) < _amount) {
             _amount = claimable - claimed;
         }
-        withdrawals[_vester] += _amount;
+        withdrawals[_vester] = claimed + _amount;
         KZA.safeTransfer(_to, _amount);
         emit Claimed(_vester, _to, _amount);
     }

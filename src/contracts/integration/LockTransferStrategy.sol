@@ -5,6 +5,7 @@ import {TransferStrategyBase} from './TransferStrategyBase.sol';
 import {SafeERC20} from '@openzeppelin/token/ERC20/utils/SafeERC20.sol';
 import {IERC20} from '@openzeppelin/token/ERC20/IERC20.sol';
 import "../../interfaces/IKZA.sol";
+import '../../libraries/UtilLib.sol';
 
 // | |/ /_ _| \ | |__  /  / \   
 // | ' / | ||  \| | / /  / _ \  
@@ -41,6 +42,10 @@ contract LockTransferStrategy is TransferStrategyBase {
       address rewardsVault,
       address xkza
     ) TransferStrategyBase(incentivesController, gov) {
+      UtilLib.checkNonZeroAddress(incentivesController);
+      UtilLib.checkNonZeroAddress(gov);
+      UtilLib.checkNonZeroAddress(rewardsVault);
+      UtilLib.checkNonZeroAddress(xkza);
       REWARDS_VAULT = rewardsVault;
       XKZA = IKZA(xkza);
       KZA = XKZA.KZA();

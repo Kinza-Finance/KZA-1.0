@@ -17,7 +17,9 @@ contract UpdateEpochFuzzTests is FuzzBase {
         // so the new block.timestamp is within uint256
         timestamp = bound(timestamp, 0, type(uint256).max - block.timestamp);
         skip(timestamp);
-        minter.update_period();
+        if (timestamp >= 7 days) {
+            minter.update_period();
+        }
         if (epoch == minter.epoch()) {
             assertEq(kzaBalanceBefore, kza.balanceOf(address(minter)));
         } else {

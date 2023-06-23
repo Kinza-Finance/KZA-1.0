@@ -9,11 +9,12 @@ contract DeployVoter is Script {
         uint256 deployerPrivateKey = vm.envUint("PRIVATE_KEY");
         address GOV = vm.envAddress("deployer");
         address xkza = vm.envAddress("XKZA");
+        address minter = vm.envAddress("Minter");
         address registry = vm.envAddress("BribeAssetRegistry");
         address votelogic = vm.envAddress("VoteLogic");
         vm.startBroadcast(deployerPrivateKey);
 
-        new Voter(xkza, votelogic, registry, GOV);
+        new Voter(xkza, minter, votelogic, registry, GOV);
 
         vm.stopBroadcast();
     }
