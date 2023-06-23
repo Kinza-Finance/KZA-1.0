@@ -30,7 +30,7 @@ contract Minter is Ownable {
                         CONSTANTS & IMMUTABLES
     //////////////////////////////////////////////////////////////*/
 
-    uint internal constant WEEK = 7 days; // allows minting once per week (reset every Thursday 00:00 UTC)
+    uint internal constant DURATION = 7 days; // allows minting once per week (reset every Thursday 00:00 UTC)
     uint internal constant PRECISION = 10000;
     IKZA public immutable KZA;
     IPool public immutable pool;
@@ -69,7 +69,7 @@ contract Minter is Ownable {
         UtilLib.checkNonZeroAddress(_governance);
         pool = IPool(_pool);
         KZA = IKZA(_KZA);
-        epoch = block.timestamp / WEEK;
+        epoch = block.timestamp / DURATION;
         transferOwnership(_governance);
     }
 
@@ -104,7 +104,7 @@ contract Minter is Ownable {
     ///      corresponding KZA reward would be added on rewardsCache
     function update_period() external returns (uint lastEpoch) {
         lastEpoch = epoch;
-        uint current = block.timestamp / WEEK;
+        uint current = block.timestamp / DURATION;
         require(address(voter) != address(0), "voter needs to be set");
         require(current > lastEpoch, "only trigger each new week"); 
         epoch = current;
