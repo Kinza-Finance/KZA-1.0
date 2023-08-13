@@ -3,16 +3,24 @@ pragma solidity 0.8.17;
 
 import "forge-std/Script.sol";
 import "../src/contracts/KZA/Minter.sol";
+import "../src/interfaces/IPoolAddressesProvider.sol";
+import "../src/contracts/KZA/KZA.sol";
 
 contract DeployMinter is Script {
     function run() external {
         uint256 deployerPrivateKey = vm.envUint("PRIVATE_KEY");
         address GOV = vm.envAddress("GOV");
         address kza = vm.envAddress("KZA");
-        address pool = vm.envAddress("Pool");
+        address provider = vm.envAddress("PoolAddressesProvider");
+
+        address pool = IPoolAddressesProvider(provider).getPool();
+        // console2.log("pool address: ", pool);
+
         vm.startBroadcast(deployerPrivateKey);
 
-        new Minter(pool, kza, GOV);
+        Minter minter = new Minter(pool, kza, GOV);
+
+        KZA(kza).setBribeMinter(address(minter));
 
         vm.stopBroadcast();
     }

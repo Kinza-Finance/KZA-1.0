@@ -8,4 +8,6 @@ forge script script/gov-action/EDistributor-setEManager.s.sol --rpc-url $MUMBAI_
 forge script script/gov-action/EManager-setEmissionAdmin.s.sol --rpc-url $MUMBAI_RPC_URL --broadcast -vvvv
 
 forge script script/gov-action/KZA-initialMint.s.sol --rpc-url $MUMBAI_RPC_URL --broadcast -vvvv
+forge script script/gov-action/KZA-setMinter.s.sol --rpc-url $MUMBAI_RPC_URL --broadcast -vvv
+
 forge script script/gov-action/Voter-pushUnderlying.s.sol --rpc-url $MUMBAI_RPC_URL --broadcast -vvvv

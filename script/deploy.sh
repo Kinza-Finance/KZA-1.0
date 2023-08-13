@@ -29,9 +29,9 @@ echo "BribeAssetRegistry=$BribeAssetRegistry" >> ".env"
 forge script script/6-Voter.s.sol --rpc-url $MUMBAI_RPC_URL --broadcast --verify -vvvv
 Voter=($(jq -r '.transactions[0].contractAddress' broadcast/6-Voter.s.sol/${chainId}/run-latest.json))
 echo "Voter=$Voter" >> ".env"
-# deploy EmissiontDistributor
-forge script script/7-EmissiontDistributor.s.sol --rpc-url $MUMBAI_RPC_URL --broadcast --verify -vvvv
-KZADistributor=($(jq -r '.transactions[0].contractAddress' broadcast/7-EmissiontDistributor.s.sol/${chainId}/run-latest.json))
+# deploy KZADistributor
+forge script script/7-KZADistributor.s.sol --rpc-url $MUMBAI_RPC_URL --broadcast --verify -vvvv
+KZADistributor=($(jq -r '.transactions[0].contractAddress' broadcast/7-KZADistributor.s.sol/${chainId}/run-latest.json))
 echo "KZADistributor=$KZADistributor" >> ".env"
 # deploy ReserveFeeDistributor
 forge script script/8-ReserveFeeDistributor.s.sol --rpc-url $MUMBAI_RPC_URL --broadcast --verify -vvvv

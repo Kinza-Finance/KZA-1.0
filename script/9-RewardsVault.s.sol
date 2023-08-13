@@ -7,7 +7,7 @@ contract DeployRewardsVault is Script {
     function run() external {
         uint256 deployerPrivateKey = vm.envUint("PRIVATE_KEY");
         address GOV = vm.envAddress("GOV");
-        address dist = vm.envAddress("EmissionDistributor");
+        address dist = vm.envAddress("KZADistributor");
         address kza = vm.envAddress("KZA");
         vm.startBroadcast(deployerPrivateKey);
 

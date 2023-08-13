@@ -12,3 +12,5 @@ logs
 # some mock stuff
 script/Mock*
 src/contracts/MockEAC
+
+.vscode/

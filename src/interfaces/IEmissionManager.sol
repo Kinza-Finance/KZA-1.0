@@ -1,3 +1,4 @@
+pragma solidity ^0.8.17;
 
 import {DataTypes} from '../libraries/DataTypes.sol';
 import {ITransferStrategyBase} from './ITransferStrategyBase.sol';
