@@ -18,9 +18,7 @@ contract DeployMinter is Script {
 
         vm.startBroadcast(deployerPrivateKey);
 
-        Minter minter = new Minter(pool, kza, GOV);
-
-        KZA(kza).setBribeMinter(address(minter));
+        new Minter(pool, kza, GOV);
 
         vm.stopBroadcast();
     }

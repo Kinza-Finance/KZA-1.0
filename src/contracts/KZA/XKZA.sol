@@ -65,9 +65,10 @@ contract XKZA is Ownable, ReentrancyGuard, ERC20("escrowed Kinza Token", "xKZA")
     //////////////////////////////////////////////////////////////*/
     event Convert(
         address indexed from, 
-        address to, uint256 amount
+        address to,
+        uint256 amount
     );
-                  
+
     event UpdateRedeemSettings(
         uint256 minRedeemRatio, 
         uint256 maxRedeemRatio, 
@@ -90,13 +91,15 @@ contract XKZA is Ownable, ReentrancyGuard, ERC20("escrowed Kinza Token", "xKZA")
     event FinalizeRedeem(
         address indexed userAddress, 
         uint256 xAmount, 
-        uint256 amount
+        uint256 amount,
+        uint256 index
     );
 
     event CancelRedeem(
         address indexed userAddress, 
-        uint256 xAmount
-      );
+        uint256 xAmount,
+        uint256 index
+    );
 
     event NewVoter(address newVoter);
 
@@ -279,7 +282,7 @@ contract XKZA is Ownable, ReentrancyGuard, ERC20("escrowed Kinza Token", "xKZA")
       uint256 xAmount = _redeem.xAmount;
       // remove from SBT total
       userReedemTotal[msg.sender] -= xAmount;
-      _finalizeRedeem(msg.sender, xAmount, _redeem.amount);
+      _finalizeRedeem(msg.sender, xAmount, _redeem.amount, redeemIndex);
 
       // remove redeem entry
       _deleteRedeemEntry(redeemIndex);
@@ -310,7 +313,7 @@ contract XKZA is Ownable, ReentrancyGuard, ERC20("escrowed Kinza Token", "xKZA")
         require(before == KZA.balanceOf(address(this)), "voter creates difference in locked token");
       }
 
-      emit CancelRedeem(msg.sender, xAmount);
+      emit CancelRedeem(msg.sender, xAmount, redeemIndex);
 
       // remove redeem entry
       _deleteRedeemEntry(redeemIndex);
@@ -347,7 +350,7 @@ contract XKZA is Ownable, ReentrancyGuard, ERC20("escrowed Kinza Token", "xKZA")
     /// @param _userAddress userAddress to receive KZA
     /// @param _xAmount the amount of xKZA to burn
     /// @param _amount the _amount of KZA to return
-    function _finalizeRedeem(address _userAddress, uint256 _xAmount, uint256 _amount) internal {
+    function _finalizeRedeem(address _userAddress, uint256 _xAmount, uint256 _amount, uint256 redeemIndex) internal {
       uint256 excess = _xAmount.sub(_amount);
 
       // sends due KZA tokens
@@ -357,7 +360,7 @@ contract XKZA is Ownable, ReentrancyGuard, ERC20("escrowed Kinza Token", "xKZA")
       KZA.burn(excess);
       _burn(address(this), _xAmount);
 
-      emit FinalizeRedeem(_userAddress, _xAmount, _amount);
+      emit FinalizeRedeem(_userAddress, _xAmount, _amount, redeemIndex);
     }
 
     /// @dev poping the last entry after swapping the last entry with the one to delete
