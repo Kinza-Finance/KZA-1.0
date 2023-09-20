@@ -156,7 +156,7 @@ contract Voter is Ownable {
     ///      check minter update_period logic
     function pushUnderlying(address _underlying) external onlyOwner {
         require(bribes[_underlying] == address(0), "exists");
-        address bribe = _createBribe(address(this), bribeAssetRegistry);
+        address bribe = _createBribe(address(this), bribeAssetRegistry, _underlying);
         bribes[_underlying] = bribe;
         markets.push(_underlying);
         emit MarketBribeCreated(_underlying, bribe);
@@ -237,8 +237,8 @@ contract Voter is Ownable {
     /// @param _owner the owner of the bribe, essentially this contract
     /// @param _registry the whitelist asset registry
     /// @return bribe the address of the newly deployed bribe contract
-    function _createBribe(address _owner, address _registry) internal returns(address bribe) {
-        bribe = address(new AggregateBribe(_owner, _registry));
+    function _createBribe(address _owner, address _registry, address _underlying) internal returns(address bribe) {
+        bribe = address(new AggregateBribe(_owner, _registry, _underlying));
     }
 
     /// @param _account the owner of the bribe, essentially this contract

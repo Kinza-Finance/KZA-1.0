@@ -1,3 +1,3 @@
 interface IBribeAssetRegistry {
-    function isWhitelisted(address _asset) external returns(bool);
+    function isWhitelisted(address _underlying, address _asset) external returns(bool);
 }

@@ -14,11 +14,11 @@ import '../../libraries/UtilLib.sol';
 /// @notice admin control this registry for which bribe asset
 ///         can be sent in to the AggregateBribe through notifyRewardAmount
 contract BribeAssetRegistry is Ownable {
+    // tokenAddress(USDC,USDT) => bribeToken => true/false
+    mapping(address => mapping(address => bool)) private whitelist;
 
-    mapping(address => bool) private whitelist;
-
-    event AddWhitelistAsset(address indexed asset);
-    event RemoveWhitelistAsset(address indexed asset);
+    event AddWhitelistAsset(address indexed underlying, address indexed asset);
+    event RemoveWhitelistAsset(address indexed underlying, address indexed asset);
 
     constructor(address _governance) {
         UtilLib.checkNonZeroAddress(_governance);
@@ -26,21 +26,21 @@ contract BribeAssetRegistry is Ownable {
     }
 
     /// @param _asset asset to be added into the whitelist
-    function addAsset(address _asset) external onlyOwner {
-        require(!whitelist[_asset], "asset whitelisted");
-        whitelist[_asset] = true;
-        emit AddWhitelistAsset(_asset);
+    function addAsset(address _underlying, address _asset) external onlyOwner {
+        require(!whitelist[_underlying][_asset], "asset whitelisted");
+        whitelist[_underlying][_asset] = true;
+        emit AddWhitelistAsset(_underlying, _asset);
     }
 
     /// @param _asset asset to be removed from the whitelist
-    function removeAsset(address _asset) external onlyOwner {
-        require(whitelist[_asset], "asset not whitelisted");
-        whitelist[_asset] = false;
-        emit RemoveWhitelistAsset(_asset);
+    function removeAsset(address _underlying, address _asset) external onlyOwner {
+        require(whitelist[_underlying][_asset], "asset not whitelisted");
+        whitelist[_underlying][_asset] = false;
+        emit RemoveWhitelistAsset(_underlying, _asset);
     }
 
     /// @param _asset asset to be checked
-    function isWhitelisted(address _asset) external view returns (bool) {
-        return whitelist[_asset];
+    function isWhitelisted(address _reserve, address _asset) external view returns (bool) {
+        return whitelist[_reserve][_asset];
     }
 }
