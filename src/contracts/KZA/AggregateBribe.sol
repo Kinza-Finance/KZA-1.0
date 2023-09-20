@@ -21,7 +21,7 @@ contract AggregateBribe {
     //////////////////////////////////////////////////////////////*/
     address public immutable voter; // only voter can modify balances (since it only happens on vote())
     address public immutable bribeAssetRegistry;
-
+    address public immutable underlying;
     uint internal constant DURATION = 7 days; // rewards are released over the voting period
 
     /*//////////////////////////////////////////////////////////////
@@ -101,9 +101,10 @@ contract AggregateBribe {
     /*//////////////////////////////////////////////////////////////
                           CONSTRUCTOR
     //////////////////////////////////////////////////////////////*/
-    constructor(address _voter, address _bribeAssetRegistry) {
+    constructor(address _voter, address _bribeAssetRegistry, address _underlying) {
         voter = _voter;
         bribeAssetRegistry = _bribeAssetRegistry;
+        underlying = _underlying;
     }
 
     /*//////////////////////////////////////////////////////////////
@@ -313,7 +314,7 @@ contract AggregateBribe {
     /// @param amount amount to send in
     function notifyRewardAmount(address token, uint amount) external lock {
         require(amount > 0, "non zero bribe is needed");
-        require(IBribeAssetRegistry(bribeAssetRegistry).isWhitelisted(token), "bribe token must be whitelisted");
+        require(IBribeAssetRegistry(bribeAssetRegistry).isWhitelisted(underlying, token), "bribe token must be whitelisted");
         // bribes kick in at the start of next bribe period
         uint adjustedTstamp = getEpochStart(block.timestamp);
         uint epochRewards = tokenRewardsPerEpoch[token][adjustedTstamp];

@@ -7,11 +7,11 @@ contract VoterTest is Test, BaseSetup {
         BaseSetup.setUp();
         BaseSetup.setupVoter(100, 100);
         vm.prank(GOV);
-        registry.addAsset(address(bribeTokenA));
-        assertEq(registry.isWhitelisted(address(bribeTokenA)), true);
+        registry.addAsset(USDC, address(bribeTokenA));
+        assertEq(registry.isWhitelisted(USDC, address(bribeTokenA)), true);
         vm.prank(GOV);
-        registry.addAsset(address(bribeTokenB));
-        assertEq(registry.isWhitelisted(address(bribeTokenB)), true);
+        registry.addAsset(USDC, address(bribeTokenB));
+        assertEq(registry.isWhitelisted(USDC, address(bribeTokenB)), true);
         // so alice can send in bribe later
         bribeTokenA.mint(alice, DEFAULT_BRIBE);
         bribeTokenB.mint(alice, DEFAULT_BRIBE);

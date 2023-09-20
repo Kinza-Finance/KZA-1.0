@@ -5,8 +5,8 @@ contract ClaimRewardFuzzTests is FuzzBase {
     function setUp() public virtual override {
         super.setUp();
         vm.prank(GOV);
-        registry.addAsset(address(bribeTokenA));
-        assertEq(registry.isWhitelisted(address(bribeTokenA)), true);
+        registry.addAsset(USDC, address(bribeTokenA));
+        assertEq(registry.isWhitelisted(USDC, address(bribeTokenA)), true);
         sendBribe();
     }
     function sendBribe() public {

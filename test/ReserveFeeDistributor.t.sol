@@ -9,7 +9,7 @@ contract ReserveFeeDistributorTest is Test, BaseSetup {
         for (uint256 i; i < assets.length; ++i) {
             address aToken = mp.getReserveData(assets[i]).aTokenAddress;
             vm.prank(GOV);
-            registry.addAsset(address(aToken));
+            registry.addAsset(assets[i], address(aToken));
             // mint some aToken to ReserveFeeDsitributor
             MockERC20(aToken).mint(address(rdist), DEFAULT_BRIBE);
         }
